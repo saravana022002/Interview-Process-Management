@@ -24,15 +24,24 @@ if(session!=null&&session.getAttribute("aname")!=null){
 String date = request.getParameter("date");
 String dbUrl = System.getenv("DB_URL");
 if (dbUrl == null || dbUrl.trim().isEmpty()) {
+    dbUrl = System.getProperty("db.url");
+}
+if (dbUrl == null || dbUrl.trim().isEmpty()) {
     dbUrl = "jdbc:mysql://localhost:3306/employee?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 }
 String dbUser = System.getenv("DB_USER");
 if (dbUser == null || dbUser.trim().isEmpty()) {
+    dbUser = System.getProperty("db.user");
+}
+if (dbUser == null || dbUser.trim().isEmpty()) {
     dbUser = "root";
 }
 String dbPassword = System.getenv("DB_PASSWORD");
-if (dbPassword == null) {
-    dbPassword = "";
+if (dbPassword == null || dbPassword.trim().isEmpty()) {
+    dbPassword = System.getProperty("db.password");
+}
+if (dbPassword == null || dbPassword.trim().isEmpty()) {
+    dbPassword = "root1234";
 }
     try
     {
@@ -70,7 +79,7 @@ if (dbPassword == null) {
         </table><br>
     <%}
     catch(Exception e){
-        out.print(e.getMessage());%><br><%
+        out.print(e.getMessage());%><br><p class="quiet">Set DB_URL, DB_USER and DB_PASSWORD for Tomcat/JVM and restart the server.</p><%
     }
    }else{
         response.sendRedirect("admin.jsp");

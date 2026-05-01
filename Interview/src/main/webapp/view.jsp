@@ -28,15 +28,24 @@ if(ses == null || ses.getAttribute("name") == null || ses.getAttribute("date") =
 String date = ses.getAttribute("date").toString();
 String dbUrl = System.getenv("DB_URL");
 if (dbUrl == null || dbUrl.trim().isEmpty()) {
+    dbUrl = System.getProperty("db.url");
+}
+if (dbUrl == null || dbUrl.trim().isEmpty()) {
     dbUrl = "jdbc:mysql://localhost:3306/employee?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 }
 String dbUser = System.getenv("DB_USER");
 if (dbUser == null || dbUser.trim().isEmpty()) {
+    dbUser = System.getProperty("db.user");
+}
+if (dbUser == null || dbUser.trim().isEmpty()) {
     dbUser = "root";
 }
 String dbPassword = System.getenv("DB_PASSWORD");
-if (dbPassword == null) {
-    dbPassword = "";
+if (dbPassword == null || dbPassword.trim().isEmpty()) {
+    dbPassword = System.getProperty("db.password");
+}
+if (dbPassword == null || dbPassword.trim().isEmpty()) {
+    dbPassword = "root1234";
 }
 %>
 <main class="page">
@@ -79,6 +88,7 @@ try {
     }
 } catch(Exception ex){
     out.print("Unable to load questions: " + ex.getMessage());
+    out.print("<p class='quiet'>Set DB_URL, DB_USER and DB_PASSWORD for Tomcat/JVM and restart the server.</p>");
 }
 %>
 <input type="hidden" name="date" value="<%=date%>">
