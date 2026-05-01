@@ -15,13 +15,6 @@ public class AllowServlet extends HttpServlet {
 			response.sendRedirect("admin.jsp");
 			return;
 		}
-
-		String sid=request.getParameter("id");
-		try {
-			int id=Integer.parseInt(sid);
-			EmpDao.updateallow(id);
-		} catch (NumberFormatException e) {
-		}
-		response.sendRedirect("ViewdateServlet");
+		response.sendRedirect("AdminDashboard");
 	}
 }

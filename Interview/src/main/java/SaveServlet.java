@@ -32,13 +32,24 @@ public class SaveServlet extends HttpServlet {
 		e.setEmail(email);
 		e.setCity(city);
 		e.setStatus(status);
-		
-		int state=EmpDao.save(e);
-		if(state>0){
+
+		int userId = EmpDao.saveAndReturnId(e);
+		if(userId>0){
+			int testDate;
+			try {
+				testDate = Integer.parseInt(date);
+			} catch (NumberFormatException ex) {
+				testDate = Integer.parseInt(date.replaceAll("[^0-9]", ""));
+			}
+			int testId = V2Dao.ensureTestForDate(testDate, "Test " + testDate, 30 * 60);
+			int attemptId = V2Dao.createOrGetCandidateAttempt(userId, testId);
+
 			HttpSession ses = request.getSession();
 			ses.setAttribute("name", name);
 			ses.setAttribute("email", email);
 			ses.setAttribute("date", date);
+			ses.setAttribute("userId", Integer.valueOf(userId));
+			ses.setAttribute("attemptId", Integer.valueOf(attemptId));
 			response.sendRedirect("startbtn.jsp");
 			out.close();
 			return;

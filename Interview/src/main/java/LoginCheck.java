@@ -34,7 +34,7 @@ public class LoginCheck extends HttpServlet {
 			if (rs.next()) {
 				HttpSession session=request.getSession();
 				session.setAttribute("aname", aname);
-				response.sendRedirect("start.jsp");
+				response.sendRedirect("AdminDashboard");
 			} else {
 				response.sendRedirect("Error.jsp");
 			}

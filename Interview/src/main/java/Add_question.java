@@ -1,7 +1,6 @@
 
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -46,27 +45,20 @@ public class Add_question extends HttpServlet {
 
 			if (testid == null || ques == null || opt1 == null || opt2 == null || ans == null ||
 				testid.trim().isEmpty() || ques.trim().isEmpty() || opt1.trim().isEmpty() || opt2.trim().isEmpty() || ans.trim().isEmpty()) {
-				response.sendRedirect("start.jsp");
+				response.sendRedirect("admin-dashboard.jsp");
 				return;
 			}
 
 			try {
 				int date = Integer.parseInt(testid.trim());
-				try (java.sql.Connection con = DBUtil.getConnection();
-					 PreparedStatement pst = con.prepareStatement("insert into questions(udate,question,opt1,opt2,answer) values(?,?,?,?,?)")) {
-					pst.setInt(1, date);
-					pst.setString(2, ques.trim());
-					pst.setString(3, opt1.trim());
-					pst.setString(4, opt2.trim());
-					pst.setString(5, ans.trim());
-					pst.executeUpdate();
-				}
-				response.sendRedirect("start.jsp");
+				int testId = V2Dao.ensureTestForDate(date, "Test " + date, 30 * 60);
+				V2Dao.addQuestion(testId, ques.trim(), opt1.trim(), opt2.trim(), ans.trim());
+				response.sendRedirect("AdminDashboard");
 			} catch (NumberFormatException e) {
-				response.sendRedirect("start.jsp");
+				response.sendRedirect("AdminDashboard");
 			} catch (Exception e) {
 				e.printStackTrace();
-				response.sendRedirect("start.jsp");
+				response.sendRedirect("AdminDashboard");
 			}
 		}else {
 			 response.sendRedirect("admin.jsp");

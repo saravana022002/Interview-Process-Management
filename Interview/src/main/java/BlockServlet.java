@@ -19,13 +19,6 @@ public class BlockServlet extends HttpServlet {
 			response.sendRedirect("admin.jsp");
 			return;
 		}
-
-		String sid=request.getParameter("id");
-		try {
-			int id=Integer.parseInt(sid);
-			EmpDao.updateblock(id);
-		} catch (NumberFormatException e) {
-		}
-		response.sendRedirect("ViewdateServlet");
+		response.sendRedirect("AdminDashboard");
 	}
 }

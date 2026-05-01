@@ -45,3 +45,19 @@ WAR output:
 Deploy the generated WAR in Tomcat 9+ and open:
 
 - `http://localhost:8080/interview-process-management-1.0.0/`
+
+## V2 workflow
+
+- Admin login goes to centralized sidebar control center: `admin-dashboard.jsp`
+- Admin can:
+  - create tests and set base duration
+  - add questions to selected test
+  - allow/block candidates instantly
+  - add extra time for a running candidate
+- Candidate gets a real test window with countdown timer: `candidate-test.jsp`
+- Real-time updates (block/unblock/time extension) use WebSocket endpoint:
+  - `/ws/candidate/{attemptId}`
+
+### Note for old databases
+
+`setup.sql` now defines the V2-only schema (`tests`, `test_questions`, `candidate_test`, `candidate_answers`). Legacy `questions` table migration support is removed.

@@ -1,3 +1,12 @@
 Interview/target/
 .idea/
 *.iml
+.smarttomcat/
+.smarttomcat/interview-process-management/conf/catalina.policy
+.smarttomcat/interview-process-management/conf/catalina.properties
+.smarttomcat/interview-process-management/conf/context.xml
+.smarttomcat/interview-process-management/conf/jaspic-providers.xml
+.smarttomcat/interview-process-management/conf/jaspic-providers.xsd
+.smarttomcat/interview-process-management/conf/logging.properties
+.smarttomcat/interview-process-management/conf/server.xml
+.smarttomcat/interview-process-management/conf/tomcat-users.xml

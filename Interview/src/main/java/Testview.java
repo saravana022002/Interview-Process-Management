@@ -2,8 +2,7 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,38 +34,31 @@ public class Testview extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out=response.getWriter();
 		RequestDispatcher rd;
-		String name=null;
-		String date=null;
-		String email=null;
-		String viewer=null;
 		HttpSession ses = request.getSession(false);
-		if(ses != null && ses.getAttribute("name")!=null){
-			name =ses.getAttribute("name").toString();
-			date =ses.getAttribute("date").toString();
-			email =ses.getAttribute("email").toString();
-		try (java.sql.Connection con = DBUtil.getConnection();
-			 PreparedStatement pst = con.prepareStatement("select status_value from users where name =? and date =? and email=? order by id desc limit 1")) {
-			pst.setString(1, name);
-			pst.setString(2, date);
-			pst.setString(3, email);
-			ResultSet rs = pst.executeQuery();
-			if (!rs.next()) {
+		if(ses != null && ses.getAttribute("name")!=null && ses.getAttribute("userId") != null){
+			int userId = Integer.parseInt(String.valueOf(ses.getAttribute("userId")));
+			int attemptId = ses.getAttribute("attemptId") == null ? -1 : Integer.parseInt(String.valueOf(ses.getAttribute("attemptId")));
+			if (attemptId <= 0) {
+				attemptId = V2Dao.getLatestAttemptForUser(userId);
+				ses.setAttribute("attemptId", Integer.valueOf(attemptId));
+			}
+
+			Map<String, Object> attempt = V2Dao.getAttemptForUser(attemptId, userId);
+			if (attempt == null) {
 				response.sendRedirect("user.html");
 				out.close();
 				return;
 			}
-			viewer=rs.getString("status_value");
-			if("allowed".equalsIgnoreCase(viewer)) {
-				rd = request.getRequestDispatcher("view.jsp");
-				rd.forward(request, response);
+
+			String status = String.valueOf(attempt.get("status"));
+			if("allowed".equalsIgnoreCase(status) || "in_progress".equalsIgnoreCase(status)) {
+				V2Dao.startAttemptIfAllowed(attemptId);
+				response.sendRedirect("CandidateTest?attemptId=" + attemptId);
 			}else {
-				rd = request.getRequestDispatcher("Waiting.jsp"); 
+				rd = request.getRequestDispatcher("Waiting.jsp");
 				rd.forward(request, response);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+
 		out.close();
 		}else {
 			response.sendRedirect("user.html");

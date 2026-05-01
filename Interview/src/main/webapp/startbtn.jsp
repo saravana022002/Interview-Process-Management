@@ -16,18 +16,21 @@
 String name=null;
 String date=null;
 String email=null;
+String attemptId=null;
 HttpSession ses = request.getSession(false);
 if(ses != null && ses.getAttribute("name")!=null){
 	name =ses.getAttribute("name").toString();
 	date =ses.getAttribute("date").toString();
 	email =ses.getAttribute("email").toString();
+	attemptId = String.valueOf(ses.getAttribute("attemptId"));
 	
 %>
 <main class="page">
     <section class="card" style="max-width:660px;">
         <span class="kicker">Candidate Area</span>
         <h2>Hello <%=name%></h2>
-        <p>You are registered for test date <strong><%=date%></strong>. Click below to check your approval and start the test.</p>
+        <p>You are registered for test date <strong><%=date%></strong>. Click below to check your approval and start the real test window.</p>
+        <p class="quiet">Attempt ID: <strong><%=attemptId%></strong></p>
 
 		<form action="Testview" method="get">
 			<input type="hidden" name="name" value="<%=name%>">

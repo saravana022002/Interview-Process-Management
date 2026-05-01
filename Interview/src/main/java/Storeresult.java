@@ -2,8 +2,9 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -41,34 +42,44 @@ public class Storeresult extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		HttpSession ses = request.getSession(false);
-		if(ses!=null&& ses.getAttribute("name")!=null) {
+		if(ses!=null&& ses.getAttribute("name")!=null && ses.getAttribute("userId") != null) {
 		String name = ses.getAttribute("name").toString();
-		String date = request.getParameter("date") == null ? "" : request.getParameter("date").trim();
-		if (date.isEmpty()) {
+		int userId = Integer.parseInt(String.valueOf(ses.getAttribute("userId")));
+		String attemptIdText = request.getParameter("attemptId") == null ? "" : request.getParameter("attemptId").trim();
+		if (attemptIdText.isEmpty()) {
 			response.sendRedirect("user.html");
 			out.close();
 			return;
 		}
-		 int wrong = 0, correct = 0;
-		try (java.sql.Connection con = DBUtil.getConnection();
-			 PreparedStatement pst=con.prepareStatement("select * from questions where udate =? ")) {
-			pst.setString(1,date);
-		    ResultSet rs=pst.executeQuery();
-		   
-		    while (rs.next()) {
-		    String correct_option = rs.getString("answer");
-		    String id = rs.getString("quesno");
-		    String answers = request.getParameter("ans"+id);
-		    if (answers != null && answers.equals(correct_option)) {
-		    correct++; //increment
-
-		    } else {
-		    wrong++; //increment
-		   }
+		try {
+		  int attemptId = Integer.parseInt(attemptIdText);
+		  Map<String, Object> attempt = V2Dao.getAttemptForUser(attemptId, userId);
+		  if (attempt == null) {
+			  response.sendRedirect("user.html");
+			  return;
 		  }
 
-		  int total = correct + wrong;
-		  int score = total == 0 ? 0 : (correct * 100) / total;
+		  Map<Integer, String> answers = new HashMap<Integer, String>();
+		  Enumeration<String> parameterNames = request.getParameterNames();
+		  while (parameterNames.hasMoreElements()) {
+			  String key = parameterNames.nextElement();
+			  if (key != null && key.startsWith("q_")) {
+				  try {
+					  int questionId = Integer.parseInt(key.substring(2));
+					  answers.put(Integer.valueOf(questionId), request.getParameter(key));
+				  } catch (NumberFormatException e) {
+				  }
+			  }
+		  }
+
+		  Map<String, Integer> scored = V2Dao.submitAttempt(attemptId, answers);
+		  CandidateWebSocket.broadcastStatus(attemptId, "SUBMITTED");
+
+		  int correct = scored.get("correct").intValue();
+		  int wrong = scored.get("wrong").intValue();
+		  int score = scored.get("score").intValue();
+		  String date = String.valueOf(attempt.get("scheduled_date"));
+
 		  out.println("<!DOCTYPE html><html><head><meta charset='ISO-8859-1'>");
 		  out.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");
 		  out.println("<title>Test Result</title>");
