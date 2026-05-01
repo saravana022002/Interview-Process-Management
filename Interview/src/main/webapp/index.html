@@ -2,14 +2,42 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Process Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
-	<form action="admin.jsp">
-	<input type="submit" name="admin" value="admin login">
-	</form>
-	<form  action="user.html">
-	<input type="submit" name="user" value ="user login" >
-	</form>
+    <main class="page">
+        <section class="hero">
+            <span class="kicker">Interview Platform</span>
+            <h1>Interview Process Management</h1>
+            <p>Schedule tests, approve candidates, and run a simple exam workflow from one place.</p>
+        </section>
+
+        <section class="grid">
+            <article class="card tall col-6">
+                <h2>Admin Console</h2>
+                <p>Create test questions, view candidates by test date, and allow or block access.</p>
+                <div class="actions">
+                    <form action="admin.jsp">
+                        <input type="submit" value="Open Admin Login">
+                    </form>
+                </div>
+            </article>
+
+            <article class="card tall alt col-6">
+                <h2>Candidate Entry</h2>
+                <p>Register with your details and wait for admin approval before starting the test.</p>
+                <div class="actions">
+                    <form action="user.html">
+                        <input type="submit" class="secondary" value="Go To Candidate Signup">
+                    </form>
+                </div>
+            </article>
+        </section>
+    </main>
 </body>
 </html>

@@ -2,30 +2,50 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candidate Signup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
+<main class="page">
+    <div class="topbar">
+        <span class="kicker">Candidate</span>
+        <a class="btn ghost" href="index.html">Back</a>
+    </div>
 
-<h1>Test Signup</h1>
-<form action="SaveServlet" method="post">
-<table>
-<tr><td>Name:</td><td><input type="text" name="name"/></td></tr>
-<tr><td>Date:</td><td><input type="text" name="date"/></td></tr>
-<tr><td>Email:</td><td><input type="email" name="email"/></td></tr>
-<tr><td>City:</td><td>
-<select name="city" style="width:150px">
-<option>Chennai</option>
-<option>Mysore</option>
-<option>Trichy</option>
-<option>Madurai</option>
-<option>Salem</option>
-</select>
-</td></tr>
-<tr><td colspan="2"><input type="submit" value="Go to Test"/></td></tr>
-</table>
-</form>
+    <section class="card" style="max-width:640px;">
+        <h2>Test Signup</h2>
+        <p>Register your details for the test date. You can start only after admin approval.</p>
 
-<br/>
-
+        <form action="SaveServlet" method="post">
+            <div class="field-grid two">
+                <label>Name
+                    <input type="text" name="name" required>
+                </label>
+                <label>Test Date
+                    <input type="number" name="date" required>
+                </label>
+                <label>Email
+                    <input type="email" name="email" required>
+                </label>
+                <label>City
+                    <select name="city" required>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Mysore">Mysore</option>
+                        <option value="Trichy">Trichy</option>
+                        <option value="Madurai">Madurai</option>
+                        <option value="Salem">Salem</option>
+                    </select>
+                </label>
+            </div>
+            <div class="actions">
+                <input type="submit" value="Save And Continue">
+            </div>
+        </form>
+    </section>
+</main>
 </body>
 </html>

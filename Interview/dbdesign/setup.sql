@@ -1,0 +1,43 @@
+CREATE DATABASE IF NOT EXISTS employee;
+USE employee;
+
+CREATE TABLE IF NOT EXISTS admins (
+    id INT NOT NULL AUTO_INCREMENT,
+    aname VARCHAR(50) DEFAULT NULL,
+    passwd VARCHAR(50) DEFAULT NULL,
+    arole VARCHAR(50) DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) DEFAULT NULL,
+    date VARCHAR(50) DEFAULT NULL,
+    email VARCHAR(100) DEFAULT NULL,
+    city VARCHAR(50) DEFAULT NULL,
+    status_value VARCHAR(50) DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS questions (
+    quesno INT NOT NULL AUTO_INCREMENT,
+    udate INT DEFAULT NULL,
+    question TEXT,
+    opt1 VARCHAR(100) DEFAULT NULL,
+    opt2 VARCHAR(100) DEFAULT NULL,
+    answer VARCHAR(100) DEFAULT NULL,
+    PRIMARY KEY (quesno)
+);
+
+CREATE TABLE IF NOT EXISTS session_store (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    sessid VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_session_store_sessid (sessid)
+);
+
+INSERT INTO admins (aname, passwd, arole)
+SELECT 'admin', 'admin123', 'admin'
+WHERE NOT EXISTS (SELECT 1 FROM admins WHERE aname = 'admin');

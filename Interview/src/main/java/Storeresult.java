@@ -2,8 +2,6 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -36,41 +34,60 @@ public class Storeresult extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		HttpSession ses = request.getSession(false);
 		if(ses!=null&& ses.getAttribute("name")!=null) {
-		String date = request.getParameter("date");
+		String name = ses.getAttribute("name").toString();
+		String date = request.getParameter("date") == null ? "" : request.getParameter("date").trim();
+		if (date.isEmpty()) {
+			response.sendRedirect("user.html");
+			out.close();
+			return;
+		}
 		 int wrong = 0, correct = 0;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection con=(Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/employee?useSSL=false","root","cricket@25");
-			PreparedStatement pst=con.prepareStatement("select * from questions where udate =? ");
+		try (java.sql.Connection con = DBUtil.getConnection();
+			 PreparedStatement pst=con.prepareStatement("select * from questions where udate =? ")) {
 			pst.setString(1,date);
 		    ResultSet rs=pst.executeQuery();
 		   
 		    while (rs.next()) {
 		    String correct_option = rs.getString("answer");
-		   //get current question..
 		    String id = rs.getString("quesno");
-		   //get user answer
 		    String answers = request.getParameter("ans"+id);
-		   //check if equalif
-		   
-		    if (answers.equals(correct_option)) {
+		    if (answers != null && answers.equals(correct_option)) {
 		    correct++; //increment
 
 		    } else {
 		    wrong++; //increment
 		   }
 		  }
-		  
-		  out.println("Correct Answer are" + correct);
-		  out.println("<br>");
-		  out.println("Wrong Answer are" + wrong);
+
+		  int total = correct + wrong;
+		  int score = total == 0 ? 0 : (correct * 100) / total;
+		  out.println("<!DOCTYPE html><html><head><meta charset='ISO-8859-1'>");
+		  out.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");
+		  out.println("<title>Test Result</title>");
+		  out.println("<link rel='preconnect' href='https://fonts.googleapis.com'>");
+		  out.println("<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>");
+		  out.println("<link href='https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Space+Grotesk:wght@400;500;600&display=swap' rel='stylesheet'>");
+		  out.println("<link rel='stylesheet' href='assets/app.css'>");
+		  out.println("</head><body><main class='page'><section class='card' style='max-width:720px;'>");
+		  out.println("<span class='kicker'>Result</span>");
+		  out.println("<h2>Thanks, " + escape(name) + "</h2>");
+		  out.println("<p class='quiet'>Test date: <strong>" + escape(date) + "</strong></p>");
+		  out.println("<table><tr><th>Metric</th><th>Value</th></tr>");
+		  out.println("<tr><td>Correct Answers</td><td>" + correct + "</td></tr>");
+		  out.println("<tr><td>Wrong Answers</td><td>" + wrong + "</td></tr>");
+		  out.println("<tr><td>Score</td><td>" + score + "%</td></tr></table>");
+		  out.println("<div class='actions'><a class='btn' href='index.html'>Go To Home</a></div>");
+		  out.println("</section></main></body></html>");
 		  ses.invalidate();
 		} catch (Exception e) {
-			
 			e.printStackTrace();
 		}
 		}else {
@@ -78,6 +95,17 @@ public class Storeresult extends HttpServlet {
 		}
 
 		
+	}
+
+	private static String escape(String value) {
+		if (value == null) {
+			return "";
+		}
+		return value.replace("&", "&amp;")
+				.replace("<", "&lt;")
+				.replace(">", "&gt;")
+				.replace("\"", "&quot;")
+				.replace("'", "&#39;");
 	}
 
 }

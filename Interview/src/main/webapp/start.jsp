@@ -4,7 +4,12 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>admin actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 <%
@@ -12,29 +17,75 @@ response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 response.setHeader("Pragma", "no-cache");
 response.setHeader("Expires","0");
 session = request.getSession(false);
-if(session.getAttribute("aname")!=null && session!=null){         
+if(session!=null && session.getAttribute("aname")!=null){
 %>
-<form action="ViewServlet" method="get">
-date:<input type="text" name="date">
-<input type="submit" value="start-test">
-</form><br><br>
-<h1>ADD QUESTION</h1>
-<form action="Add_question" method="post">
-date:<input type="number" name="date"><br>
-question:<input type="text" name="ques"><br>
-option-1:<input type="text" name="opt1"><br>
-option-2:<input type="text" name="opt2"><br>
-Answer:<input type="text" name="ans"><br>
-<input type ="submit" value="add-question">
-</form><br><br>
-<h1>VIEW QUESTIONS</h1>
-<form action="viewques.jsp">
-date:<input type="text" name="date" id="date">
-<input type ="submit" value="view-question">
-</form><br><br>
-<form action="Logout">
-<input type="submit" value="Logout">
-</form>
+<main class="page">
+    <div class="topbar">
+        <span class="kicker">Admin Dashboard</span>
+        <form action="Logout">
+            <input type="submit" class="danger" value="Logout">
+        </form>
+    </div>
+
+    <section class="grid">
+        <article class="card col-4">
+            <h3>Candidate Controls</h3>
+            <p class="quiet">Load candidates by test date and update access status.</p>
+            <form action="ViewServlet" method="get">
+                <div class="field-grid">
+                    <label>Test Date
+                        <input type="number" name="date" required>
+                    </label>
+                </div>
+                <div class="actions">
+                    <input type="submit" value="Open Candidate List">
+                </div>
+            </form>
+        </article>
+
+        <article class="card col-4">
+            <h3>Add Question</h3>
+            <p class="quiet">Create a question with two options and the correct answer.</p>
+            <form action="Add_question" method="post">
+                <div class="field-grid">
+                    <label>Test Date
+                        <input type="number" name="date" required>
+                    </label>
+                    <label>Question
+                        <input type="text" name="ques" required>
+                    </label>
+                    <label>Option 1
+                        <input type="text" name="opt1" required>
+                    </label>
+                    <label>Option 2
+                        <input type="text" name="opt2" required>
+                    </label>
+                    <label>Answer
+                        <input type="text" name="ans" required>
+                    </label>
+                </div>
+                <div class="actions">
+                    <input type="submit" value="Add Question">
+                </div>
+            </form>
+        </article>
+
+        <article class="card col-4">
+            <h3>View Questions</h3>
+            <p class="quiet">See all questions already added for a selected date.</p>
+            <form action="viewques.jsp">
+                <div class="field-grid">
+                    <label>Test Date
+                        <input type="number" name="date" id="date" required>
+                    </label>
+                </div>
+                <div class="actions">
+                    <input type="submit" value="View Questions">
+                </div>
+            </form>
+        </article>
+    </section>
+</main>
 <%}else{
 response.sendRedirect("admin.jsp");
 }%>

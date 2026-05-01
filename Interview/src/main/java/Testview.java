@@ -2,16 +2,11 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +34,7 @@ public class Testview extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		PrintWriter out=response.getWriter();
-		RequestDispatcher rd= null;
+		RequestDispatcher rd;
 		String name=null;
 		String date=null;
 		String email=null;
@@ -49,31 +44,26 @@ public class Testview extends HttpServlet {
 			name =ses.getAttribute("name").toString();
 			date =ses.getAttribute("date").toString();
 			email =ses.getAttribute("email").toString();
-		Connection con = null;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/employee?useSSL=false", "root","cricket@25");
-			PreparedStatement pst = con.prepareStatement("select status_value from users where name =? and date =? and email=?");
+		try (java.sql.Connection con = DBUtil.getConnection();
+			 PreparedStatement pst = con.prepareStatement("select status_value from users where name =? and date =? and email=? order by id desc limit 1")) {
 			pst.setString(1, name);
 			pst.setString(2, date);
 			pst.setString(3, email);
 			ResultSet rs = pst.executeQuery();
-			rs.next();
+			if (!rs.next()) {
+				response.sendRedirect("user.html");
+				out.close();
+				return;
+			}
 			viewer=rs.getString("status_value");
-			if(viewer.equals("allowed")) {
-				rd = request.getRequestDispatcher("view.jsp"); 
+			if("allowed".equalsIgnoreCase(viewer)) {
+				rd = request.getRequestDispatcher("view.jsp");
 				rd.forward(request, response);
 			}else {
 				rd = request.getRequestDispatcher("Waiting.jsp"); 
 				rd.forward(request, response);
 			}
 		} catch (Exception e) {
-			try {
-				con.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
 		}
 		
